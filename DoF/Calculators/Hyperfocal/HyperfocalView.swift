@@ -7,40 +7,49 @@
 
 import SwiftUI
 
-struct ContentView: View {
-    @EnvironmentObject var stateController: StateController
+struct HyperfocalView: View {
+    public var name = "Hyperfocal"
+    public var description: String = "Get the hyperfocal distance for your lens."
+    
+    @ObservedObject var stateController: HyperfocalState = HyperfocalState()
     var body: some View {
-        NavigationView {
+        VStack {
+                Text(String(format: "%.1f m", stateController.meters))
+                    .font(.largeTitle)
+                    .bold()
+                    .padding()
             Form {
                 Section(header: Text("Sensor Type") ) {
                     Picker("Sensor", selection: $stateController.sensorType) {
                         ForEach(SensorType.allCases, id: \.self) {option in
                             Text(String(describing: option))
-                        }
+                        }.pickerStyle(.segmented)
                     }
                 }
-                Section(header: Text("Hyperfocal Distance") ) {
-                    Text("\(stateController.meters, specifier: "%.1f") m")
-                }
                 Section(header: Text("Focal Length") ) {
-                    Slider(value: .convert(from: $stateController.focalLength), in: 8...85, step: 1)
-                    Text("\(stateController.focalLength, specifier: "%d") mm")
+                    Picker("Focal Length", selection: $stateController.focalLength) {
+                        ForEach(8...85, id: \.self) {value in
+                            Text("\(value) mm")
+                        }
+                    }
                 }
                 Section(header: Text("Aperture") ) {
                     Picker("Aperture", selection: $stateController.fStop) {
                         ForEach(stateController.fStops, id: \.self) {value in
                             Text("f/\(String(format: "%.1f", value))")
                         }
-                    }.pickerStyle(.wheel)
+                    }
                 }
-            }.navigationTitle("Hyperfocal")
-                .listStyle(.insetGrouped)
+            }
         }
+        .navigationTitle("Hyperfocal")
     }
+    
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView().environmentObject(StateController())
+        HyperfocalView().environmentObject(HyperfocalState())
     }
 }

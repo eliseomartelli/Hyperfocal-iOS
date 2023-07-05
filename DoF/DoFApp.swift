@@ -9,11 +9,12 @@ import SwiftUI
 
 @main
 struct DoFApp: App {
-    @StateObject private var state = StateController()
-
+    
     var body: some Scene {
         WindowGroup {
-            ContentView().environmentObject(state)
+            NavigationView {
+                HomeView()
+            }
         }
     }
 }

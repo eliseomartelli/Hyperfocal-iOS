@@ -7,43 +7,35 @@
 
 import Foundation
 
-enum SensorType: CaseIterable, Hashable {
-    case APSC
-    case FullFrame
-}
 
 
-final class StateController : ObservableObject {
+final class StarruleState: ObservableObject {
     init() {
-        updateMeters()
+        updateSeconds()
     }
     
     let fStops = initializeFstops(length: 27)
     
     @Published var fStop: Float = 1.0 {
         didSet {
-            updateMeters()
+            updateSeconds()
         }
     }
     @Published var focalLength: Int = 24 {
         didSet {
-            updateMeters()
+            updateSeconds()
         }
     }
-    @Published var meters: Float = 0
+    @Published var seconds: Float = 0
     
     @Published var sensorType: SensorType = .FullFrame {
         didSet {
-            updateMeters()
+            updateSeconds()
         }
     }
     
-    let circleOfConfusion: [SensorType: Float] = [.FullFrame: 0.029, .APSC: 0.018]
-    
-    func updateMeters() {
-        let currentCoc = circleOfConfusion[sensorType] ?? circleOfConfusion[.FullFrame]
-        let fLengthSquared = Float(focalLength) * Float(focalLength)
-        meters = ((fLengthSquared/(fStop * currentCoc!)) + Float(focalLength))/1000
+    func updateSeconds() {
+        seconds = 500.0/(sensorType.cropFactor * Float(focalLength))
     }
     
     
